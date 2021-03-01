@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Chat</title>
+</head>
+<body>
+<h2>Chatting</h2>
+<label for="message"></label><input type="text" id="message"/>
+<button onclick="messageSubmit()">submit</button>
+<div id="chat-zone">
+
+</div>
+</body>
+<script>
+    const msg = document.getElementById("message");
+
+
+    const submit = (m) => {
+        const ajax = new XMLHttpRequest();
+        ajax.open('POST','/chat',true);
+        ajax.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        ajax.send("message="+m);
+        ajax.addEventListener('load', (e) => {
+            msg.value = '';
+        })
+    };
+
+    function messageSubmit(){
+        const message = msg.value;
+        submit(message);
+    }
+    const drawZone = document.getElementById('chat-zone');
+    const evtSource = new EventSource("/sub");
+    evtSource.onmessage = (e) => {
+        const message = (e.data);
+        const text = document.createElement('p');
+        text.textContent = message;
+        drawZone.appendChild(text);
+    }
+
+    submit((() => {
+        return '입장하였습니다'})
+        ()
+    );
+
+</script>
+</html>
